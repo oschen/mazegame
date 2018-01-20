@@ -119,16 +119,14 @@ void top_stack(Node* ptr,int* x ,int *y) {
 
 
 bool check_in_path(Node* ptr,int x,int y) {
-   printf("begin to check %d ,%d in path or not\n",x,y);
    while(ptr)
    {
     if(ptr->x==x && ptr->y==y)
-    { printf("%d,%d in the path\n",x,y);
-      return true;}
+       return true;
     ptr=ptr->next;
        }
 
-   printf("%d,%d not in the path\n",x,y);
+
    return false;
 
     }
@@ -168,15 +166,11 @@ void initmaze(int m,int n)
           }
           putchar('\n');
       }
-      printf("showpath func ended well \n");
     }
 
 
 int pass(Node* ptr,int i,int j)
 {
-  printf("show path before search,begin to check %d,%d ,its value is %d\n",i,j,maze[i][j]);
-  showpath(ptr);
-  printf("m:%d,n:%d\n",m,n);
   if(maze[i][j]==9)
      return maze[i][j];
   if( j<n-1 && maze[i][j+1]!=1 && maze[i][j+1]!=7 && !check_in_path(ptr,i,j+1))
@@ -189,10 +183,8 @@ int pass(Node* ptr,int i,int j)
       maze[i][j]=5;
   else
     {
-      printf("block %d,%d\n",i,j);
       maze[i][j]=7;
 }
-  printf("return with %d\n",maze[i][j]);
   return maze[i][j];
 
     }
@@ -206,7 +198,7 @@ void setpath(Node *ptr)
  else{
  while(ptr)
  {
-     maze[ptr->x][ptr->y]=7;
+     maze[ptr->x][ptr->y]=99;
      ptr=ptr->next;
      }
  }
@@ -216,16 +208,15 @@ void setpath(Node *ptr)
 
 void drawmaze()
 {
-   printf("begin to draw maze\n");
    for(int i=0;i<m;i++)
     {   for(int j=0;j<n;j++)
      {
         if(maze[i][j]==1 || maze[i][j]==7)
             putchar('x');
-        else if(maze[i][j]==7)
-            putchar('r');
         else if(maze[i][j]==9)
             putchar('T');
+        else if(maze[i][j]==99)
+            putchar('e');
         else
             putchar('o');
         putchar(' ');
@@ -254,7 +245,6 @@ Node* findpath()
            ptr=push_stack(ptr,i,j);
 
        num=pass(ptr,i,j);
-       printf("num is %d \n",num);
        switch(num)
        {
          case 2:
@@ -270,12 +260,9 @@ Node* findpath()
            i-=1;
            break;
          case 7:
-            printf("start block in findpath %d,%d\n",i,j);
-            printf("block at path:\n");
             showpath(ptr);
       //     if(ptr)
             top_stack(ptr,x,y);
-            printf("begin to pop back %d,%d",*x,*y);
 
             ptr=pop_stack(ptr,x,y);
             if(isempty())
@@ -291,13 +278,12 @@ Node* findpath()
 
             break;
         }
-      printf("searching for solution\n");
-      printf("current path is: \n");
-      showpath(ptr);
+
 
     }while(!isempty() && flag!=1);
    if(flag==1)
-   {  setpath(ptr);
+   {
+     setpath(ptr);
      printf("Find a path\n");
      showpath(ptr);
      return ptr;
@@ -310,11 +296,17 @@ Node* findpath()
 int main()
 {
     char c;
+    char choice;
     Node* res;
+
+    while(true)
+    {
     printf("Maze game start: \nPlease imput the row of the maze :");
     scanf("%d",&m);
+    getchar();
     printf("Please input the column of the maze : ");
     scanf("%d",&n);
+    getchar();
     initmaze(m,n);
     printf("The maze is :\n");
     drawmaze();
@@ -329,6 +321,12 @@ int main()
    else
        printf("no solution found\n");
 
+       printf("Do you want to continue[Y/N]:\n");
+       //fflush(stdin);
+       choice=getchar();
+       if(choice!='y' && choice!='Y')
+          break;
+     }
     return 0;
 
     }
